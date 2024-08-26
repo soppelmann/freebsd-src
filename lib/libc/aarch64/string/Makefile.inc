@@ -14,7 +14,6 @@ AARCH64_STRING_FUNCS= \
 	strchrnul \
 	strcpy \
 	strlen \
-	strncmp \
 	strnlen \
 	strrchr
 
@@ -28,7 +27,8 @@ MDSRCS+= \
 	strcat.c \
 	memcmp.S \
 	bcmp.S \
-	strlcpy.S
+	strlcpy.S \
+	strncmp.S
 
 #
 # Add the above functions. Generate an asm file that includes the needed
