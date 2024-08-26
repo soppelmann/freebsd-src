@@ -5,7 +5,6 @@
 
 AARCH64_STRING_FUNCS= \
 	memchr \
-	memcmp \
 	memcpy \
 	memmove \
 	memrchr \
@@ -26,7 +25,9 @@ MDSRCS+= \
 	strcspn.S \
 	strpbrk.c \
 	strsep.c \
-	strcat.c
+	strcat.c \
+	memcmp.S \
+	bcmp.S
 
 #
 # Add the above functions. Generate an asm file that includes the needed
