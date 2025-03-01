@@ -28,18 +28,18 @@
  * SUCH DAMAGE.
  */
 
-#include <sys/param.h>
+
+#include <machine/stdarg.h>
 #include <sys/cons.h>
 #include <sys/consio.h>
 #include <sys/kernel.h>
 #include <sys/lock.h>
 #include <sys/malloc.h>
 #include <sys/mutex.h>
+#include <sys/param.h>
 #include <sys/systm.h>
 #include <sys/terminal.h>
 #include <sys/tty.h>
-
-#include <machine/stdarg.h>
 
 static MALLOC_DEFINE(M_TERMINAL, "terminal", "terminal device");
 
@@ -125,6 +125,13 @@ static teken_attr_t kernel_message = {
 	.ta_bgcolor	= TCHAR_BGCOLOR(TERMINAL_KERN_ATTR),
 	.ta_format	= TCHAR_FORMAT(TERMINAL_KERN_ATTR)
 };
+
+void
+terminal_restyle_kernel_message(void)
+{
+	kernel_message.ta_fgcolor = TCHAR_FGCOLOR(FG_WHITE);
+	kernel_message.ta_bgcolor = TCHAR_BGCOLOR(BG_CYAN);
+}
 
 static teken_attr_t default_message = {
 	.ta_fgcolor	= TCHAR_FGCOLOR(TERMINAL_NORM_ATTR),
