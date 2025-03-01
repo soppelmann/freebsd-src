@@ -34,26 +34,7 @@
  * SUCH DAMAGE.
  */
 
-
-
-
-
-
-
-
-
-
-
-    "Seconds to wait before rebooting after a panic");
-    "Seconds to wait before rebooting");
-    &panic_reboot_wait_time, 0,
-    &reboot_wait_time, 0,
- * ANSI and traditional C compilers.
- * Note that stdarg.h and the ANSI style va_start macro is used for both
- */
-#define PANIC_REBOOT_WAIT_TIME 15 /* default to 15 seconds */
-#endif
-#ifndef PANIC_REBOOT_WAIT_TIME
+#include <sys/cdefs.h>
 #include "opt_ddb.h"
 #include "opt_ekcd.h"
 #include "opt_kdb.h"
@@ -61,22 +42,14 @@
 #include "opt_printf.h"
 #include "opt_sched.h"
 #include "opt_watchdog.h"
-#include <crypto/chacha20/chacha.h>
-#include <crypto/rijndael/rijndael-api-fst.h>
-#include <crypto/sha2/sha256.h>
-#include <ddb/ddb.h>
-#include <machine/cpu.h>
-#include <machine/dump.h>
-#include <machine/pcb.h>
-#include <machine/smp.h>
-#include <machine/stdarg.h>
-#include <security/mac/mac_framework.h>
+
+#include <sys/param.h>
+#include <sys/systm.h>
 #include <sys/bio.h>
 #include <sys/boottrace.h>
 #include <sys/buf.h>
-#include <sys/cdefs.h>
-#include <sys/compressor.h>
 #include <sys/conf.h>
+#include <sys/compressor.h>
 #include <sys/cons.h>
 #include <sys/disk.h>
 #include <sys/eventhandler.h>
@@ -90,7 +63,6 @@
 #include <sys/malloc.h>
 #include <sys/mbuf.h>
 #include <sys/mount.h>
-#include <sys/param.h>
 #include <sys/priv.h>
 #include <sys/proc.h>
 #include <sys/reboot.h>
@@ -98,26 +70,53 @@
 #include <sys/rwlock.h>
 #include <sys/sbuf.h>
 #include <sys/sched.h>
-#include <sys/signalvar.h>
 #include <sys/smp.h>
 #include <sys/sysctl.h>
 #include <sys/sysproto.h>
-#include <sys/systm.h>
 #include <sys/taskqueue.h>
-#include <sys/terminal.h>
 #include <sys/vnode.h>
 #include <sys/watchdog.h>
-#include <vm/swap_pager.h>
+
+#include <crypto/chacha20/chacha.h>
+#include <crypto/rijndael/rijndael-api-fst.h>
+#include <crypto/sha2/sha256.h>
+
+#include <ddb/ddb.h>
+
+#include <machine/cpu.h>
+#include <machine/dump.h>
+#include <machine/pcb.h>
+#include <machine/smp.h>
+
+#include <security/mac/mac_framework.h>
+
 #include <vm/vm.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
 #include <vm/vm_pager.h>
-/*
-SYSCTL_INT(_kern, OID_AUTO, panic_reboot_wait_time, CTLFLAG_RWTUN,
-SYSCTL_INT(_kern, OID_AUTO, reboot_wait_time, CTLFLAG_RWTUN,
+#include <vm/swap_pager.h>
+
+#include <sys/signalvar.h>
+
 static MALLOC_DEFINE(M_DUMPER, "dumper", "dumper block buffer");
+
+#ifndef PANIC_REBOOT_WAIT_TIME
+#define PANIC_REBOOT_WAIT_TIME 15 /* default to 15 seconds */
+#endif
 static int panic_reboot_wait_time = PANIC_REBOOT_WAIT_TIME;
+SYSCTL_INT(_kern, OID_AUTO, panic_reboot_wait_time, CTLFLAG_RWTUN,
+    &panic_reboot_wait_time, 0,
+    "Seconds to wait before rebooting after a panic");
 static int reboot_wait_time = 0;
+SYSCTL_INT(_kern, OID_AUTO, reboot_wait_time, CTLFLAG_RWTUN,
+    &reboot_wait_time, 0,
+    "Seconds to wait before rebooting");
+
+/*
+ * Note that stdarg.h and the ANSI style va_start macro is used for both
+ * ANSI and traditional C compilers.
+ */
+#include <machine/stdarg.h>
 
 #ifdef KDB
 #ifdef KDB_UNATTENDED
@@ -950,8 +949,6 @@ vpanic(const char *fmt, va_list ap)
 		(void)vsnprintf(buf, sizeof(buf), fmt, ap);
 		panicstr = buf;
 		cngrab();
-                terminal_restyle_kernel_message();
-		printf("\033[2J\033[H\n\n\n\n");
 		printf("panic: %s\n", buf);
 	} else {
 		printf("panic: ");

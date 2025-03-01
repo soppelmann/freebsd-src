@@ -28,16 +28,16 @@
  * SUCH DAMAGE.
  */
 
-
-
-#define	_SYS_TERMINAL_H_
 #ifndef _SYS_TERMINAL_H_
+#define	_SYS_TERMINAL_H_
+
+#include <sys/param.h>
 #include <sys/_lock.h>
 #include <sys/_mutex.h>
 #include <sys/cons.h>
 #include <sys/linker_set.h>
-#include <sys/param.h>
 #include <sys/ttycom.h>
+
 #include <teken/teken.h>
 
 #include "opt_syscons.h"
@@ -220,8 +220,6 @@ void	terminal_input_raw(struct terminal *tm, char c);
 void	terminal_input_special(struct terminal *tm, unsigned int k);
 
 void	termcn_cnregister(struct terminal *tm);
-
-void	terminal_restyle_kernel_message(void);
 
 /* Kernel console helper interface. */
 extern const struct consdev_ops termcn_cnops;
