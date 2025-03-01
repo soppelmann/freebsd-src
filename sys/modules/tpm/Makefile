@@ -8,7 +8,7 @@ SRCS+=	opt_acpi.h opt_tpm.h
 #Bus specific stuff.
 .if ${MACHINE_ARCH:Namd64:Ni386} == ""
 SRCS+= tpm.c
-SRCS+=	tpm_acpi.c tpm_isa.c
+SRCS+=	tpm_acpi.c tpm_isa.c tpm_gsc.c
 SRCS+=	isa_if.h
 .endif
 
